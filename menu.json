@@ -1,0 +1,130 @@
+[
+  {
+    "id": "rodo",
+    "name": "Rodo",
+    "description": "Dos medallones smash y cheddar + papas.",
+    "price": "$14.000",
+    "tag": "Doble",
+    "image": ""
+  },
+  {
+    "id": "motz",
+    "name": "Motz",
+    "description": "Dos medallones smash, cheddar y cebolla smasheada + papas.",
+    "price": "$15.000",
+    "tag": "Doble",
+    "image": ""
+  },
+  {
+    "id": "sandals",
+    "name": "Sandals",
+    "description": "Dos medallones smash, cheddar, cebolla picada, ketchup y mostaza + papas.",
+    "price": "$14.500",
+    "tag": "Doble",
+    "image": ""
+  },
+  {
+    "id": "kid",
+    "name": "Kid",
+    "description": "Dos medallones smash, cheddar, lechuga, tomate, panceta y salsa tasty + papas.",
+    "price": "$15.000",
+    "tag": "Doble",
+    "image": ""
+  },
+  {
+    "id": "kalifon",
+    "name": "Kalifon",
+    "description": "Dos medallones smash, cheddar, panceta, aros de cebolla y salsa barbacoa + papas.",
+    "price": "$15.500",
+    "tag": "Doble",
+    "image": ""
+  },
+  {
+    "id": "chavo",
+    "name": "Chavo",
+    "description": "Dos medallones smash, cheddar, guacamole y salsa spicy + papas.",
+    "price": "$15.000",
+    "tag": "Doble",
+    "image": ""
+  },
+  {
+    "id": "lisa",
+    "name": "Lisa",
+    "description": "Medallón NotCo, cheddar, lechuga, tomate y salsa mil islas + papas.",
+    "price": "$13.000",
+    "tag": "Vegetariana",
+    "image": ""
+  },
+  {
+    "id": "jhon",
+    "name": "Jhon",
+    "description": "Dos medallones smash, cheddar, panceta y huevo frito + papas.",
+    "price": "$15.500",
+    "tag": "Doble",
+    "image": ""
+  },
+  {
+    "id": "kingsitos-burger",
+    "name": "Kingsitos",
+    "description": "Medallón smash y cheddar + papas.",
+    "price": "$11.500",
+    "tag": "Sencilla",
+    "image": ""
+  },
+  {
+    "id": "big-mau",
+    "name": "Big Mau",
+    "description": "Dos medallones smash, cheddar, pepinillos, lechuga, cebolla brunoise y salsa big + papas.",
+    "price": "$15.500",
+    "tag": "Doble",
+    "image": ""
+  },
+  {
+    "id": "joe",
+    "name": "Joe",
+    "description": "Dos medallones smash, cheddar, mermelada de bacon, cebollita crispy y salsa alioli + papas.",
+    "price": "$16.000",
+    "tag": "Doble",
+    "image": ""
+  },
+  {
+    "id": "patty-melt",
+    "name": "Patty Melt",
+    "description": "Dos medallones smash con quíntuple cheddar, cebolla caramelizada y mayonesa en pan de molde tostado y enmantecado.",
+    "price": "$17.000",
+    "tag": "Especial",
+    "image": ""
+  },
+  {
+    "id": "king-deluxe",
+    "name": "King Deluxe",
+    "description": "Dos medallones smash, cheddar, panceta, cebollita crispy y salsa mil islas + papas.",
+    "price": "$15.500",
+    "tag": "Doble",
+    "image": ""
+  },
+  {
+    "id": "kingsitos-nuggets",
+    "name": "Kingsitos Nuggets",
+    "description": "Nuggets x7 + papas.",
+    "price": "$11.000",
+    "tag": "Nuggets",
+    "image": ""
+  },
+  {
+    "id": "picada-king",
+    "name": "Picada King",
+    "description": "6 nuggets, 3 tequeños, 5 aros de cebolla + papas.",
+    "price": "$16.000",
+    "tag": "Para compartir",
+    "image": ""
+  },
+  {
+    "id": "promo-simples",
+    "name": "Promo Simples",
+    "description": "3 hamburguesas simples (King, Rodo y Motz) + porción de papas.",
+    "price": "$24.000",
+    "tag": "Promo",
+    "image": ""
+  }
+]

@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Smash King — Panel de administración</title>
+<style>
+  :root {
+    --bg: #14161a;
+    --panel: #1e2127;
+    --panel-2: #262a32;
+    --border: #343943;
+    --text: #eef0f3;
+    --text-dim: #9aa1ad;
+    --accent: #cf6f9f;
+    --accent-2: #f2ac3e;
+    --ok: #3ba96c;
+    --err: #e05252;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 32px 20px 100px;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin: 0 0 6px; }
+  h3 { margin: 0; }
+  .subtitle { color: var(--text-dim); margin: 0 0 28px; font-size: 0.95rem; }
+  .warning {
+    background: #3a2a12;
+    border: 1px solid #6b4a1a;
+    color: #f0c37a;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin-bottom: 28px;
+  }
+  .warning a { color: #ffd48a; }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .panel h2 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    margin: 0 0 14px;
+  }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .panel-head h2 { margin: 0; }
+
+  label { display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-dim); }
+  input[type="password"], input[type="text"], textarea {
+    width: 100%;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+  }
+  textarea { resize: vertical; min-height: 64px; }
+  input:focus, textarea:focus { outline: 2px solid var(--accent); }
+
+  .row { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.85rem; color: var(--text-dim); }
+  .row input[type="checkbox"] { width: auto; }
+
+  .small { font-size: 0.8rem; color: var(--text-dim); margin-top: 10px; line-height: 1.5; }
+  .small a { color: var(--text); }
+
+  .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 4px; }
+  .config-grid .full { grid-column: 1 / -1; }
+
+  .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+
+  .slot, .dish-card {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .slot-thumb, .dish-thumb {
+    aspect-ratio: 4 / 3;
+    background: var(--panel) center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    position: relative;
+  }
+  .slot-thumb.has-image, .dish-thumb.has-image { color: transparent; }
+  .slot-body { padding: 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .slot-name { font-weight: 600; font-size: 0.95rem; }
+  .slot-path { font-size: 0.78rem; color: var(--text-dim); font-family: ui-monospace, monospace; }
+
+  .dropzone {
+    border: 1.5px dashed var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .dropzone:hover, .dropzone.drag { border-color: var(--accent); background: rgba(207, 111, 159, 0.1); }
+  .dropzone input { display: none; }
+
+  .status { font-size: 0.8rem; min-height: 1.2em; }
+  .status.ok { color: var(--ok); }
+  .status.err { color: var(--err); }
+  .status.busy { color: var(--text-dim); }
+
+  .top-links { margin-bottom: 24px; font-size: 0.85rem; }
+  .top-links a { color: var(--text-dim); margin-right: 16px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn:hover { border-color: var(--text-dim); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); font-weight: 600; }
+  .btn.primary:hover { background: #b95f8b; }
+  .btn.ghost { background: transparent; }
+  .btn.danger { color: var(--err); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .dishes { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 18px; }
+
+  .dish-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .dish-field label { margin-bottom: 4px; }
+  .dish-row { display: flex; gap: 10px; }
+  .dish-row > div { flex: 1; }
+  .dish-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; }
+  .dish-order { display: flex; gap: 4px; }
+  .dish-order .btn { padding: 6px 8px; }
+
+  .save-bar {
+    position: sticky;
+    bottom: 16px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top-links">
+    <a href="index.html">← Ver el sitio</a>
+    <a href="https://github.com/lolosannn/smashking" target="_blank" rel="noopener">Repo en GitHub ↗</a>
+  </div>
+
+  <h1>Panel de administración — Smash King</h1>
+  <p class="subtitle">Editá el menú (agregar, sacar, modificar platos y fotos) directo sobre el repo, sin pasar por GitHub.</p>
+
+  <div class="warning">
+    <strong>Uso interno.</strong> No compartas esta página ni el link con nadie. Usá un token
+    <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">fine-grained</a>
+    limitado al repo <code>lolosannn/smashking</code>, con permiso <strong>Contents: Read and write</strong> únicamente
+    (nada más). El token solo se usa desde tu navegador para hablar con la API de GitHub — no pasa por ningún servidor
+    intermedio ni se guarda en el repo.
+  </div>
+
+  <div class="panel">
+    <h2>Acceso</h2>
+    <label for="token">GitHub Token</label>
+    <input type="password" id="token" placeholder="github_pat_..." autocomplete="off" />
+    <div class="row">
+      <input type="checkbox" id="remember" />
+      <label for="remember" style="margin:0;">Recordar en este navegador (localStorage)</label>
+    </div>
+
+    <div class="config-grid" style="margin-top:16px;">
+      <div>
+        <label for="cfgOwner">Owner</label>
+        <input type="text" id="cfgOwner" value="lolosannn" />
+      </div>
+      <div>
+        <label for="cfgRepo">Repo</label>
+        <input type="text" id="cfgRepo" value="smashking" />
+      </div>
+      <div class="full">
+        <label for="cfgBranch">Branch</label>
+        <input type="text" id="cfgBranch" value="claude/smashking-design-adaptation-eb4nh9" />
+      </div>
+    </div>
+    <p class="small">Si más adelante mergeás a <code>main</code>, cambiá el branch de acá arriba.</p>
+  </div>
+
+  <div class="panel">
+    <h2>Ubicación en Google Maps</h2>
+    <p class="small" style="margin-top:0;">
+      Pegá acá el link de Google Maps de tu local (abrí Maps, buscá la dirección, tocá "Compartir" y copiá el link).
+      Es a donde lleva el botón "Estamos acá" del sitio.
+    </p>
+    <label for="mapsUrlInput">Link de Google Maps</label>
+    <input type="text" id="mapsUrlInput" placeholder="https://maps.app.goo.gl/..." />
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Carrusel — Nuestra historia</h2>
+      <button class="btn" id="addAboutPhoto" type="button">+ Agregar foto</button>
+    </div>
+    <p class="small" style="margin-top:0;margin-bottom:14px;">Estas fotos rotan en la sección "Nuestra historia" del sitio. Subí fotos reales del local o de la plancha — mientras no haya ninguna, el sitio muestra un cartel en su lugar.</p>
+    <div class="dishes" id="aboutPhotos">
+      <p class="status busy">Cargando fotos…</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Platos del menú</h2>
+      <button class="btn" id="addDish" type="button">+ Agregar plato</button>
+    </div>
+    <p class="small" style="margin-top:0;margin-bottom:14px;">Un plato sin foto todavía se muestra con un ícono de placeholder en el sitio — no hace falta subir la foto para que aparezca en el menú.</p>
+    <div class="dishes" id="dishes">
+      <p class="status busy">Cargando menú…</p>
+    </div>
+  </div>
+</div>
+
+<div class="save-bar" id="saveBar" style="display:none;">
+  <button class="btn primary" id="saveMapsUrl" type="button">Guardar ubicación</button>
+  <span class="status" id="saveMapsStatus"></span>
+  <button class="btn primary" id="saveAbout" type="button">Guardar carrusel</button>
+  <span class="status" id="saveAboutStatus"></span>
+  <button class="btn primary" id="saveMenu" type="button">Guardar cambios en el menú</button>
+  <span class="status" id="saveStatus"></span>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var tokenInput = document.getElementById("token");
+  var rememberBox = document.getElementById("remember");
+
+  var saved = localStorage.getItem("sk_admin_token");
+  if (saved) {
+    tokenInput.value = saved;
+    rememberBox.checked = true;
+  }
+  rememberBox.addEventListener("change", syncRemember);
+  tokenInput.addEventListener("input", syncRemember);
+  function syncRemember() {
+    if (rememberBox.checked && tokenInput.value) {
+      localStorage.setItem("sk_admin_token", tokenInput.value);
+    } else {
+      localStorage.removeItem("sk_admin_token");
+    }
+  }
+
+  function cfg() {
+    return {
+      owner: document.getElementById("cfgOwner").value.trim(),
+      repo: document.getElementById("cfgRepo").value.trim(),
+      branch: document.getElementById("cfgBranch").value.trim(),
+      token: tokenInput.value.trim()
+    };
+  }
+
+  function apiUrl(c, path) {
+    return "https://api.github.com/repos/" + c.owner + "/" + c.repo + "/contents/" + path;
+  }
+  function rawUrl(c, path) {
+    return "https://raw.githubusercontent.com/" + c.owner + "/" + c.repo + "/" + c.branch + "/" + path + "?t=" + Date.now();
+  }
+  function authHeaders(c) {
+    var h = { Accept: "application/vnd.github+json" };
+    if (c.token) h.Authorization = "token " + c.token;
+    return h;
+  }
+  function fileToBase64(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () { resolve(reader.result.split(",")[1]); };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+  function b64EncodeUnicode(str) {
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+  function b64DecodeUnicode(str) {
+    return decodeURIComponent(escape(atob(str)));
+  }
+
+  function getFile(c, path) {
+    return fetch(apiUrl(c, path) + "?ref=" + encodeURIComponent(c.branch), { headers: authHeaders(c) })
+      .then(function (res) {
+        if (res.status === 200) return res.json();
+        return null;
+      })
+      .catch(function () { return null; });
+  }
+
+  function putFile(c, path, base64Content, sha, message) {
+    var body = { message: message, content: base64Content, branch: c.branch };
+    if (sha) body.sha = sha;
+    return fetch(apiUrl(c, path), {
+      method: "PUT",
+      headers: Object.assign({ "Content-Type": "application/json" }, authHeaders(c)),
+      body: JSON.stringify(body)
+    }).then(function (res) {
+      if (!res.ok) {
+        return res.json().then(function (err) { throw new Error(err.message || res.statusText); });
+      }
+      return res.json();
+    });
+  }
+
+  function uploadImage(c, path, file) {
+    return Promise.all([fileToBase64(file), getFile(c, path)]).then(function (r) {
+      return putFile(c, path, r[0], r[1] ? r[1].sha : null, "Update " + path + " via admin panel");
+    });
+  }
+
+  function requireToken(status) {
+    var c = cfg();
+    if (!c.token) {
+      status.textContent = "Falta el token de GitHub (arriba).";
+      status.className = "status err";
+      return null;
+    }
+    return c;
+  }
+
+  function formatPrice(raw) {
+    var digits = String(raw || "").replace(/[^\d]/g, "").replace(/^0+(?=\d)/, "");
+    if (!digits) return "";
+    return "$" + digits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
+
+  function slugify(str) {
+    var map = { á: "a", é: "e", í: "i", ó: "o", ú: "u", ñ: "n", ü: "u" };
+    var out = String(str || "").toLowerCase().replace(/[áéíóúñü]/g, function (ch) { return map[ch] || ch; });
+    out = out.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    return out || "plato";
+  }
+
+  function extFromFile(file) {
+    var m = /\.([a-zA-Z0-9]+)$/.exec(file.name || "");
+    if (m) return m[1].toLowerCase();
+    if (file.type === "image/png") return "png";
+    if (file.type === "image/webp") return "webp";
+    return "jpg";
+  }
+
+  /* ---------- Google Maps link ---------- */
+  var mapsUrlInput = document.getElementById("mapsUrlInput");
+  var saveMapsBtn = document.getElementById("saveMapsUrl");
+  var saveMapsStatus = document.getElementById("saveMapsStatus");
+  var configSha = null;
+
+  function loadConfig() {
+    getFile(cfg(), "config.json").then(function (file) {
+      if (file && file.content) {
+        configSha = file.sha;
+        try {
+          var data = JSON.parse(b64DecodeUnicode(file.content.replace(/\n/g, "")));
+          mapsUrlInput.value = data.mapsUrl || "";
+        } catch (e) { /* leave the field empty */ }
+      }
+    });
+  }
+
+  saveMapsBtn.addEventListener("click", function () {
+    var c = requireToken(saveMapsStatus);
+    if (!c) return;
+    var url = mapsUrlInput.value.trim();
+    if (!url) {
+      saveMapsStatus.textContent = "Pegá un link de Google Maps antes de guardar.";
+      saveMapsStatus.className = "status err";
+      return;
+    }
+
+    saveMapsStatus.textContent = "Guardando…";
+    saveMapsStatus.className = "status busy";
+    saveMapsBtn.disabled = true;
+
+    var json = JSON.stringify({ mapsUrl: url }, null, 2) + "\n";
+    putFile(c, "config.json", b64EncodeUnicode(json), configSha, "Update config.json via admin panel")
+      .then(function (res) {
+        configSha = res.content.sha;
+        saveMapsStatus.textContent = "Guardado ✓ — el sitio se actualiza en 1-2 min.";
+        saveMapsStatus.className = "status ok";
+      })
+      .catch(function (err) {
+        saveMapsStatus.textContent = "Error: " + err.message;
+        saveMapsStatus.className = "status err";
+      })
+      .then(function () { saveMapsBtn.disabled = false; });
+  });
+
+  loadConfig();
+
+  /* ---------- "Nuestra historia" carousel photos ---------- */
+  var aboutPhotosEl = document.getElementById("aboutPhotos");
+  var addAboutBtn = document.getElementById("addAboutPhoto");
+  var saveAboutBtn = document.getElementById("saveAbout");
+  var saveAboutStatus = document.getElementById("saveAboutStatus");
+
+  var aboutState = { items: [], sha: null };
+
+  function loadAbout() {
+    var c = cfg();
+    getFile(c, "about.json").then(function (file) {
+      if (file && file.content) {
+        try {
+          aboutState.items = JSON.parse(b64DecodeUnicode(file.content.replace(/\n/g, "")));
+          aboutState.sha = file.sha;
+        } catch (e) {
+          aboutState.items = [];
+          aboutState.sha = file.sha;
+        }
+      } else {
+        aboutState.items = [];
+        aboutState.sha = null;
+      }
+      renderAboutPhotos();
+      saveBar.style.display = "flex";
+    });
+  }
+
+  function renderAboutPhotos() {
+    aboutPhotosEl.innerHTML = "";
+    if (!aboutState.items.length) {
+      var empty = document.createElement("p");
+      empty.className = "status";
+      empty.textContent = "No hay fotos todavía. Agregá una con el botón de arriba.";
+      aboutPhotosEl.appendChild(empty);
+      return;
+    }
+    aboutState.items.forEach(function (item, index) {
+      aboutPhotosEl.appendChild(buildAboutCard(item, index));
+    });
+  }
+
+  function buildAboutCard(item, index) {
+    var c0 = cfg();
+    var card = document.createElement("div");
+    card.className = "dish-card";
+
+    var thumb = document.createElement("div");
+    thumb.className = "dish-thumb";
+    thumb.textContent = "Sin foto";
+
+    var body = document.createElement("div");
+    body.className = "dish-body";
+
+    var altWrap = document.createElement("div");
+    altWrap.className = "dish-field";
+    var altLabel = document.createElement("label");
+    altLabel.textContent = "Descripción de la foto";
+    var altInput = document.createElement("input");
+    altInput.type = "text";
+    altInput.value = item.alt || "";
+    altInput.placeholder = "Ej: Medallones dorándose en la plancha";
+    altWrap.appendChild(altLabel);
+    altWrap.appendChild(altInput);
+    body.appendChild(altWrap);
+
+    var drop = document.createElement("label");
+    drop.className = "dropzone";
+    drop.textContent = "Click o arrastrá una foto";
+    var fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    drop.appendChild(fileInput);
+    body.appendChild(drop);
+
+    var photoStatus = document.createElement("div");
+    photoStatus.className = "status";
+    body.appendChild(photoStatus);
+
+    var actions = document.createElement("div");
+    actions.className = "dish-actions";
+    var order = document.createElement("div");
+    order.className = "dish-order";
+    var upBtn = document.createElement("button");
+    upBtn.className = "btn ghost";
+    upBtn.type = "button";
+    upBtn.textContent = "↑";
+    upBtn.disabled = index === 0;
+    var downBtn = document.createElement("button");
+    downBtn.className = "btn ghost";
+    downBtn.type = "button";
+    downBtn.textContent = "↓";
+    downBtn.disabled = index === aboutState.items.length - 1;
+    order.appendChild(upBtn);
+    order.appendChild(downBtn);
+    var delBtn = document.createElement("button");
+    delBtn.className = "btn danger";
+    delBtn.type = "button";
+    delBtn.textContent = "Eliminar";
+    actions.appendChild(order);
+    actions.appendChild(delBtn);
+    body.appendChild(actions);
+
+    card.appendChild(thumb);
+    card.appendChild(body);
+
+    function setThumb(url) {
+      thumb.style.backgroundImage = "url('" + url + "')";
+      thumb.classList.add("has-image");
+      thumb.textContent = "";
+    }
+    if (item.image) {
+      var probe = new Image();
+      probe.onload = function () { setThumb(probe.src); };
+      probe.src = rawUrl(c0, item.image);
+    }
+
+    altInput.addEventListener("input", function () { item.alt = altInput.value; });
+
+    function handlePhoto(file) {
+      if (!file) return;
+      var c = requireToken(photoStatus);
+      if (!c) return;
+      if (!item.image) {
+        var ext = extFromFile(file);
+        item.image = "images/about-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6) + "." + ext;
+      }
+      setThumb(URL.createObjectURL(file));
+      photoStatus.textContent = "Subiendo…";
+      photoStatus.className = "status busy";
+      uploadImage(c, item.image, file)
+        .then(function () {
+          photoStatus.textContent = "Listo ✓";
+          photoStatus.className = "status ok";
+        })
+        .catch(function (err) {
+          photoStatus.textContent = "Error: " + err.message;
+          photoStatus.className = "status err";
+        });
+    }
+    fileInput.addEventListener("change", function () { handlePhoto(fileInput.files[0]); });
+    ["dragover", "dragenter"].forEach(function (evt) {
+      drop.addEventListener(evt, function (e) { e.preventDefault(); drop.classList.add("drag"); });
+    });
+    ["dragleave", "dragend", "drop"].forEach(function (evt) {
+      drop.addEventListener(evt, function () { drop.classList.remove("drag"); });
+    });
+    drop.addEventListener("drop", function (e) {
+      e.preventDefault();
+      var file = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file) handlePhoto(file);
+    });
+
+    upBtn.addEventListener("click", function () {
+      if (index === 0) return;
+      var tmp = aboutState.items[index - 1];
+      aboutState.items[index - 1] = aboutState.items[index];
+      aboutState.items[index] = tmp;
+      renderAboutPhotos();
+    });
+    downBtn.addEventListener("click", function () {
+      if (index === aboutState.items.length - 1) return;
+      var tmp = aboutState.items[index + 1];
+      aboutState.items[index + 1] = aboutState.items[index];
+      aboutState.items[index] = tmp;
+      renderAboutPhotos();
+    });
+    delBtn.addEventListener("click", function () {
+      if (!confirm("¿Sacar esta foto del carrusel?")) return;
+      aboutState.items.splice(index, 1);
+      renderAboutPhotos();
+    });
+
+    return card;
+  }
+
+  addAboutBtn.addEventListener("click", function () {
+    aboutState.items.push({ image: "", alt: "" });
+    renderAboutPhotos();
+  });
+
+  saveAboutBtn.addEventListener("click", function () {
+    var c = requireToken(saveAboutStatus);
+    if (!c) return;
+    var missing = aboutState.items.some(function (it) { return !it.image; });
+    if (missing && !confirm("Hay fotos sin imagen subida todavía. ¿Guardar igual?")) return;
+
+    saveAboutStatus.textContent = "Guardando…";
+    saveAboutStatus.className = "status busy";
+    saveAboutBtn.disabled = true;
+
+    var json = JSON.stringify(aboutState.items, null, 2) + "\n";
+    var base64 = b64EncodeUnicode(json);
+
+    putFile(c, "about.json", base64, aboutState.sha, "Update about.json via admin panel")
+      .then(function (res) {
+        aboutState.sha = res.content.sha;
+        saveAboutStatus.textContent = "Guardado ✓ — el sitio se actualiza en 1-2 min.";
+        saveAboutStatus.className = "status ok";
+      })
+      .catch(function (err) {
+        saveAboutStatus.textContent = "Error: " + err.message;
+        saveAboutStatus.className = "status err";
+      })
+      .then(function () { saveAboutBtn.disabled = false; });
+  });
+
+  /* ---------- Menu editor ---------- */
+  var dishesEl = document.getElementById("dishes");
+  var addDishBtn = document.getElementById("addDish");
+  var saveBar = document.getElementById("saveBar");
+  var saveBtn = document.getElementById("saveMenu");
+  var saveStatus = document.getElementById("saveStatus");
+
+  var state = { items: [], sha: null, loaded: false };
+
+  function loadMenu() {
+    var c = cfg();
+    getFile(c, "menu.json").then(function (file) {
+      state.loaded = true;
+      if (file && file.content) {
+        try {
+          state.items = JSON.parse(b64DecodeUnicode(file.content.replace(/\n/g, "")));
+          state.sha = file.sha;
+        } catch (e) {
+          state.items = [];
+          state.sha = file.sha;
+        }
+      } else {
+        state.items = [];
+        state.sha = null;
+      }
+      renderDishes();
+      saveBar.style.display = "flex";
+    });
+  }
+
+  function renderDishes() {
+    dishesEl.innerHTML = "";
+    if (!state.items.length) {
+      var empty = document.createElement("p");
+      empty.className = "status";
+      empty.textContent = "No hay platos todavía. Agregá uno con el botón de arriba.";
+      dishesEl.appendChild(empty);
+      return;
+    }
+    state.items.forEach(function (item, index) {
+      dishesEl.appendChild(buildDishCard(item, index));
+    });
+  }
+
+  function buildDishCard(item, index) {
+    var c0 = cfg();
+    var card = document.createElement("div");
+    card.className = "dish-card";
+
+    var thumb = document.createElement("div");
+    thumb.className = "dish-thumb";
+    thumb.textContent = "Sin foto";
+
+    var body = document.createElement("div");
+    body.className = "dish-body";
+
+    function field(labelText, tag, value, placeholder) {
+      var wrap = document.createElement("div");
+      wrap.className = "dish-field";
+      var l = document.createElement("label");
+      l.textContent = labelText;
+      var input = document.createElement(tag);
+      input.value = value || "";
+      if (placeholder) input.placeholder = placeholder;
+      wrap.appendChild(l);
+      wrap.appendChild(input);
+      body.appendChild(wrap);
+      return input;
+    }
+
+    var nameInput = field("Nombre", "input", item.name, "Ej: Rodo");
+    nameInput.type = "text";
+    var descInput = field("Descripción", "textarea", item.description, "Ingredientes del plato");
+    var row = document.createElement("div");
+    row.className = "dish-row";
+    body.appendChild(row);
+
+    var priceWrap = document.createElement("div");
+    var priceLabel = document.createElement("label");
+    priceLabel.textContent = "Precio";
+    var priceInput = document.createElement("input");
+    priceInput.type = "text";
+    priceInput.inputMode = "numeric";
+    priceInput.value = item.price || "";
+    priceInput.placeholder = "$0.000";
+    priceWrap.appendChild(priceLabel);
+    priceWrap.appendChild(priceInput);
+    row.appendChild(priceWrap);
+
+    var tagWrap = document.createElement("div");
+    var tagLabel = document.createElement("label");
+    tagLabel.textContent = "Etiqueta";
+    var tagInput = document.createElement("input");
+    tagInput.type = "text";
+    tagInput.value = item.tag || "";
+    tagInput.placeholder = "Ej: Doble";
+    tagWrap.appendChild(tagLabel);
+    tagWrap.appendChild(tagInput);
+    row.appendChild(tagWrap);
+
+    var drop = document.createElement("label");
+    drop.className = "dropzone";
+    drop.textContent = "Click o arrastrá una foto";
+    var fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    drop.appendChild(fileInput);
+    body.appendChild(drop);
+
+    var photoStatus = document.createElement("div");
+    photoStatus.className = "status";
+    body.appendChild(photoStatus);
+
+    var actions = document.createElement("div");
+    actions.className = "dish-actions";
+    var order = document.createElement("div");
+    order.className = "dish-order";
+    var upBtn = document.createElement("button");
+    upBtn.className = "btn ghost";
+    upBtn.type = "button";
+    upBtn.textContent = "↑";
+    upBtn.disabled = index === 0;
+    var downBtn = document.createElement("button");
+    downBtn.className = "btn ghost";
+    downBtn.type = "button";
+    downBtn.textContent = "↓";
+    downBtn.disabled = index === state.items.length - 1;
+    order.appendChild(upBtn);
+    order.appendChild(downBtn);
+    var delBtn = document.createElement("button");
+    delBtn.className = "btn danger";
+    delBtn.type = "button";
+    delBtn.textContent = "Eliminar";
+    actions.appendChild(order);
+    actions.appendChild(delBtn);
+    body.appendChild(actions);
+
+    card.appendChild(thumb);
+    card.appendChild(body);
+
+    function setThumb(url) {
+      thumb.style.backgroundImage = "url('" + url + "')";
+      thumb.classList.add("has-image");
+      thumb.textContent = "";
+    }
+    if (item.image) {
+      var probe = new Image();
+      probe.onload = function () { setThumb(probe.src); };
+      probe.src = rawUrl(c0, item.image) ;
+    }
+
+    nameInput.addEventListener("input", function () { item.name = nameInput.value; });
+    descInput.addEventListener("input", function () { item.description = descInput.value; });
+    priceInput.addEventListener("input", function () {
+      var formatted = formatPrice(priceInput.value);
+      priceInput.value = formatted;
+      item.price = formatted;
+    });
+    tagInput.addEventListener("input", function () { item.tag = tagInput.value; });
+
+    function handlePhoto(file) {
+      if (!file) return;
+      var c = requireToken(photoStatus);
+      if (!c) return;
+      if (!item.id) {
+        if (!nameInput.value.trim()) {
+          photoStatus.textContent = "Escribí el nombre del plato antes de subir la foto.";
+          photoStatus.className = "status err";
+          return;
+        }
+        item.id = slugify(nameInput.value);
+      }
+      var ext = extFromFile(file);
+      var path = "images/" + item.id + "." + ext;
+      setThumb(URL.createObjectURL(file));
+      photoStatus.textContent = "Subiendo…";
+      photoStatus.className = "status busy";
+      uploadImage(c, path, file)
+        .then(function () {
+          item.image = path;
+          photoStatus.textContent = "Listo ✓";
+          photoStatus.className = "status ok";
+        })
+        .catch(function (err) {
+          photoStatus.textContent = "Error: " + err.message;
+          photoStatus.className = "status err";
+        });
+    }
+    fileInput.addEventListener("change", function () { handlePhoto(fileInput.files[0]); });
+    ["dragover", "dragenter"].forEach(function (evt) {
+      drop.addEventListener(evt, function (e) { e.preventDefault(); drop.classList.add("drag"); });
+    });
+    ["dragleave", "dragend", "drop"].forEach(function (evt) {
+      drop.addEventListener(evt, function () { drop.classList.remove("drag"); });
+    });
+    drop.addEventListener("drop", function (e) {
+      e.preventDefault();
+      var file = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file) handlePhoto(file);
+    });
+
+    upBtn.addEventListener("click", function () {
+      if (index === 0) return;
+      var tmp = state.items[index - 1];
+      state.items[index - 1] = state.items[index];
+      state.items[index] = tmp;
+      renderDishes();
+    });
+    downBtn.addEventListener("click", function () {
+      if (index === state.items.length - 1) return;
+      var tmp = state.items[index + 1];
+      state.items[index + 1] = state.items[index];
+      state.items[index] = tmp;
+      renderDishes();
+    });
+    delBtn.addEventListener("click", function () {
+      if (!confirm('¿Sacar "' + (item.name || "este plato") + '" del menú?')) return;
+      state.items.splice(index, 1);
+      renderDishes();
+    });
+
+    return card;
+  }
+
+  addDishBtn.addEventListener("click", function () {
+    state.items.push({ id: "", name: "", description: "", price: "", tag: "", image: "" });
+    renderDishes();
+  });
+
+  saveBtn.addEventListener("click", function () {
+    var c = requireToken(saveStatus);
+    if (!c) return;
+
+    saveStatus.textContent = "Guardando…";
+    saveStatus.className = "status busy";
+    saveBtn.disabled = true;
+
+    var json = JSON.stringify(state.items, null, 2) + "\n";
+    var base64 = b64EncodeUnicode(json);
+
+    putFile(c, "menu.json", base64, state.sha, "Update menu.json via admin panel")
+      .then(function (res) {
+        state.sha = res.content.sha;
+        saveStatus.textContent = "Guardado ✓ — el sitio se actualiza en 1-2 min.";
+        saveStatus.className = "status ok";
+      })
+      .catch(function (err) {
+        saveStatus.textContent = "Error: " + err.message;
+        saveStatus.className = "status err";
+      })
+      .then(function () { saveBtn.disabled = false; });
+  });
+
+  loadAbout();
+  loadMenu();
+})();
+</script>
+</body>
+</html>

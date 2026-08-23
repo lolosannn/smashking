@@ -195,11 +195,13 @@
     observeReveals(container);
   }
 
+  var HOME_MENU_COUNT = 3;
+
   fetch("menu.json", { cache: "no-store" })
     .then(function (res) { return res.json(); })
     .then(function (items) {
       menuItems = items;
-      renderMenu(menuGrid, items, true);
+      renderMenu(menuGrid, items.slice(0, HOME_MENU_COUNT), true);
       if (fullMenu && fullMenu.classList.contains("is-open")) {
         renderMenu(fullMenuGrid, items, true);
         fullMenuGrid.dataset.rendered = String(items.length);

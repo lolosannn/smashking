@@ -581,30 +581,68 @@ h1, h2, h3, h4 {
   animation-direction: reverse;
 }
 
-/* ---------- Hero mascot (CSS/SVG built — no photo dependency) ---------- */
-.hero-mascot {
+/* ---------- Hero photo (PNG uploaded from admin.html) ---------- */
+.hero-image-wrap {
   position: relative;
   z-index: 1;
-  width: min(420px, 84vw);
+  width: min(480px, 88vw);
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
   animation: heroFloat 5s ease-in-out infinite;
 }
 
-.hero-mascot .css-burger {
+.hero-cutout {
   width: 100%;
-  height: min(300px, 66vw);
-  filter: drop-shadow(0 30px 34px rgba(10, 6, 11, 0.55));
+  max-width: none;
+  height: auto;
+  filter: drop-shadow(0 30px 34px rgba(10, 6, 11, 0.5));
 }
 
 .hero-crown {
-  width: 42%;
-  margin-bottom: -14px;
+  position: absolute;
+  top: -6%;
+  left: 50%;
+  translate: -50% 0;
+  width: 32%;
   color: var(--gold);
   filter: drop-shadow(4px 4px 0 var(--ink));
   transform: rotate(-6deg);
+  z-index: 2;
 }
+
+.hero-image-placeholder {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 360px;
+  background: var(--black-soft);
+  border: 3px dashed var(--pink);
+  border-radius: 50%;
+  padding: 40px;
+}
+
+.hero-image-placeholder svg {
+  width: 30%;
+  height: 30%;
+  color: var(--pink);
+}
+
+.hero-image-placeholder p {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: var(--surface-dark);
+  max-width: 220px;
+}
+
+.hero-image-wrap.is-empty .hero-cutout,
+.hero-image-wrap.is-empty .hero-crown { display: none; }
+.hero-image-wrap.is-empty .hero-image-placeholder { display: flex; }
 
 .hero-badge {
   position: absolute;
@@ -1577,7 +1615,7 @@ h1, h2, h3, h4 {
   .hero-actions, .hero-stats { justify-content: center; }
   .hero-stats div { text-align: center; }
   .hero-visual { order: -1; margin-top: 0; margin-bottom: 8px; min-height: 340px; }
-  .hero-mascot { width: min(320px, 78vw); }
+  .hero-image-wrap { width: min(360px, 78vw); }
   .hero-badge { font-size: 0.85rem; padding: 9px 14px; }
   .hero-badge--rating { top: 2%; right: 0; }
   .hero-badge--fresh { bottom: 4%; left: -4%; }

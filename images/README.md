@@ -2,6 +2,7 @@
 
 No edites esta carpeta a mano. Usá **`admin.html`** (el panel de administración) para:
 
+- Subir la foto de portada (hero) — `images/hero-king.png`.
 - Agregar, editar, eliminar y reordenar platos del menú — nombre, descripción, precio,
   etiqueta y foto de cada uno.
 - Subir fotos reales del local / la plancha para el carrusel de "Nuestra historia".

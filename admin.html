@@ -218,6 +218,15 @@
   </div>
 
   <div class="panel">
+    <h2>Foto de portada (hero)</h2>
+    <p class="small" style="margin-top:0;">
+      Es la foto grande de hamburguesa que aparece en la portada del sitio. Mientras no
+      subas una, se muestra un cartel de placeholder en su lugar.
+    </p>
+    <div class="slots" id="heroSlot"></div>
+  </div>
+
+  <div class="panel">
     <h2>Ubicación en Google Maps</h2>
     <p class="small" style="margin-top:0;">
       Pegá acá el link de Google Maps de tu local (abrí Maps, buscá la dirección, tocá "Compartir" y copiá el link).
@@ -424,6 +433,79 @@
   });
 
   loadConfig();
+
+  /* ---------- Hero photo slot ---------- */
+  (function heroSlot() {
+    var container = document.getElementById("heroSlot");
+    var el = document.createElement("div");
+    el.className = "slot";
+    var thumb = document.createElement("div");
+    thumb.className = "slot-thumb";
+    thumb.textContent = "Sin foto todavía";
+    var body = document.createElement("div");
+    body.className = "slot-body";
+    var name = document.createElement("div");
+    name.className = "slot-name";
+    name.textContent = "Portada (hero)";
+    var pathEl = document.createElement("div");
+    pathEl.className = "slot-path";
+    pathEl.textContent = "images/hero-king.png";
+    var drop = document.createElement("label");
+    drop.className = "dropzone";
+    drop.textContent = "Click o arrastrá una imagen acá";
+    var input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    drop.appendChild(input);
+    var status = document.createElement("div");
+    status.className = "status";
+
+    body.appendChild(name);
+    body.appendChild(pathEl);
+    body.appendChild(drop);
+    body.appendChild(status);
+    el.appendChild(thumb);
+    el.appendChild(body);
+    container.appendChild(el);
+
+    function setThumb(url) {
+      thumb.style.backgroundImage = "url('" + url + "')";
+      thumb.classList.add("has-image");
+      thumb.textContent = "";
+    }
+    function handleFile(file) {
+      if (!file) return;
+      var c = requireToken(status);
+      if (!c) return;
+      setThumb(URL.createObjectURL(file));
+      status.textContent = "Subiendo…";
+      status.className = "status busy";
+      uploadImage(c, "images/hero-king.png", file)
+        .then(function () {
+          status.textContent = "Listo ✓";
+          status.className = "status ok";
+        })
+        .catch(function (err) {
+          status.textContent = "Error: " + err.message;
+          status.className = "status err";
+        });
+    }
+    input.addEventListener("change", function () { handleFile(input.files[0]); });
+    ["dragover", "dragenter"].forEach(function (evt) {
+      drop.addEventListener(evt, function (e) { e.preventDefault(); drop.classList.add("drag"); });
+    });
+    ["dragleave", "dragend", "drop"].forEach(function (evt) {
+      drop.addEventListener(evt, function () { drop.classList.remove("drag"); });
+    });
+    drop.addEventListener("drop", function (e) {
+      e.preventDefault();
+      var file = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    });
+    var probe = new Image();
+    probe.onload = function () { setThumb(probe.src); };
+    probe.src = rawUrl(cfg(), "images/hero-king.png");
+  })();
 
   /* ---------- "Nuestra historia" carousel photos ---------- */
   var aboutPhotosEl = document.getElementById("aboutPhotos");

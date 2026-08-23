@@ -124,15 +124,12 @@
         <div class="hero-visual__ring" aria-hidden="true"></div>
         <div class="hero-visual__ring hero-visual__ring--2" aria-hidden="true"></div>
 
-        <div class="hero-mascot" aria-hidden="true">
-          <svg class="hero-crown" viewBox="0 0 100 60" fill="currentColor"><path d="M4 58h92l7-40-24 15-19-25-19 25-24-15 7 40Z"/><circle cx="50" cy="6" r="6"/><circle cx="12" cy="20" r="5"/><circle cx="88" cy="20" r="5"/></svg>
-          <div class="css-burger">
-            <div class="bun-top"></div>
-            <div class="lettuce"></div>
-            <div class="cheese"></div>
-            <div class="patty"></div>
-            <div class="tomato"></div>
-            <div class="bun-bottom"></div>
+        <div class="hero-image-wrap" id="heroImageWrap">
+          <svg class="hero-crown" viewBox="0 0 100 60" fill="currentColor" aria-hidden="true"><path d="M4 58h92l7-40-24 15-19-25-19 25-24-15 7 40Z"/><circle cx="50" cy="6" r="6"/><circle cx="12" cy="20" r="5"/><circle cx="88" cy="20" r="5"/></svg>
+          <img class="hero-cutout" id="heroImg" src="images/hero-king.png" alt="Hamburguesa Smash King" onerror="this.closest('.hero-image-wrap').classList.add('is-empty')" />
+          <div class="hero-image-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 11a8 8 0 0 1 16 0M3 11h18M4 11v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1M6 17h12"/></svg>
+            <p>Subí la foto de portada desde el panel de administración</p>
           </div>
         </div>
 
@@ -180,7 +177,7 @@
       </div>
 
       <div class="menu-cta reveal reveal--up">
-        <a href="#carta" class="btn btn--secondary" id="openFullMenu">Ver carta completa</a>
+        <a href="#carta" class="btn btn--secondary" id="openFullMenu">Mostrar menú completo</a>
       </div>
     </div>
   </section>
